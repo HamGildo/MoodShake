@@ -1,2 +1,2 @@
-# Personal-mood-measurement-app
+# MoodShake
 Gildo and Ikmyeong_ Graduation Project
