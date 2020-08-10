@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "MoodShake",
+    "slug": "MoodShake",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/MoodShake_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#BED297"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}
