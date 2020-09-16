@@ -344,7 +344,20 @@ export default class Chatbot extends Component {
           DEPRESSION_SCORE.Score = total_Score+2;
         else if(queryText == '매우 많이')
           DEPRESSION_SCORE.Score = total_Score+3;
-        console.log(DEPRESSION_SCORE.Score);  
+        console.log(DEPRESSION_SCORE.Score);
+        
+        let target = 'http://192.168.0.12:8889/depression';
+        axios({
+          url: target,
+          method: 'post',
+          data: {
+            depression_score : total_Score.toFixed(2),  
+          },
+        })
+        .then( response => {
+          console.log(response)
+        })
+        .catch(err => console.log(err));
         break;
         
       default: return -1;  
@@ -418,7 +431,7 @@ export default class Chatbot extends Component {
         MOOD_SCORE.Neg_score = 0;
 
         //서버에 보내기
-        let target = 'http://172.30.1.52:8889/chat';
+        let target = 'http://192.168.0.12:8889/chat';
         axios({
           url: target,
           method: 'post',

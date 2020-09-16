@@ -25,7 +25,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
     }    
 
     componentDidMount(){
-        fetch('http://172.30.1.52:8889/chat')
+        fetch('http://192.168.0.12:8889/chat')
         .then(res => res.json())
         .then(data =>this.setState({score: data.data}));
     }
