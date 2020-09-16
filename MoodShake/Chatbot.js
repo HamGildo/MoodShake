@@ -19,6 +19,10 @@ const MOOD_SCORE = {
   updateNeg : 0,
 };
 
+const DEPRESSION_SCORE = {
+  Score: 0,
+};
+
 //Mood 계산용 Map
 // const mood_map = [
   // {
@@ -156,6 +160,7 @@ export default class Chatbot extends Component {
     let intent_name;
     
     let moodScore = this.handleMoodScore(result);
+    let depressionScore = this.handleDepressionScore(result);
 
     if ('platform' in result.queryResult.fulfillmentMessages[0]) {
       // console.log("if문 들어감");
@@ -170,6 +175,9 @@ export default class Chatbot extends Component {
       intent_name = result.queryResult.intent.displayName;
       if(intent_name == 'sum_mood_point'){
         text.push('너의 점수는... '+ String(moodScore.toFixed(2)));
+      }
+      if(intent_name == 'sum_depression_point'){
+        text.push('너의 점수는... '+ String(depressionScore));
       }
       console.log(text);
     }
@@ -208,6 +216,141 @@ export default class Chatbot extends Component {
       }));
     }
       
+  }
+
+  handleDepressionScore(result){
+    let intent_name = result.queryResult.intent.displayName;
+    let queryText = result.queryResult.queryText;
+    let total_Score = DEPRESSION_SCORE.Score;
+
+    switch(intent_name){
+      case 'check_depression_1/10':
+        DEPRESSION_SCORE.Score = 0;
+        break;
+      case 'check_depression_2/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);        
+        break;
+
+      case 'check_depression_3/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);        
+        break;
+      
+      case 'check_depression_4/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);     
+        break;  
+      
+      case 'check_depression_5/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);        
+        break;
+        
+      case 'check_depression_6/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);        
+        break;
+      
+      case 'check_depression_7/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);     
+        break;  
+
+      case 'check_depression_8/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);     
+        break;
+
+      case 'check_depression_9/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);     
+        break;
+      
+      case 'check_depression_10/10':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '며칠정도')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '7일 이상')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '거의 매일')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);     
+        break;  
+      
+      case 'sum_depression_point':
+        if(queryText == '전혀')
+          DEPRESSION_SCORE.Score = total_Score+0;
+        else if(queryText == '약간')
+          DEPRESSION_SCORE.Score = total_Score+1;
+        else if(queryText == '많이')
+          DEPRESSION_SCORE.Score = total_Score+2;
+        else if(queryText == '매우 많이')
+          DEPRESSION_SCORE.Score = total_Score+3;
+        console.log(DEPRESSION_SCORE.Score);  
+        break;
+        
+      default: return -1;  
+    }
+
+    return DEPRESSION_SCORE.Score;
   }
 
   handleMoodScore(result){
