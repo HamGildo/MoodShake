@@ -1,26 +1,39 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
-import axios from 'axios';
-import { render } from 'react-dom';
+//import * as Notifications from 'expo-notifications';
+//import * as Permissions from 'expo-permissions';
+import { StyleSheet, Text, SafeAreaView, View, Image } from 'react-native';
+import ProgressBar from 'react-native-progress/Bar';
+//import axios from 'axios';
+//import { render } from 'react-dom';
+//import Constants from 'expo-constants';
+//import {Notifications} from 'expo';
+
 
 
 const moodOptions = {
     Pos: {
-        iconName: "pos_icon.png",
+        statusIcon: require('./assets/pos_icon.png'),
         statusColor: '#0eef',
     },
-    neg: {
-        iconName: "neg_icon.png",
+    Neg: {
+        statusIcon: require('./assets/neg_icon.png'),
         statusColor: '#ff4000',
     }
-}
+};
+
+const bpmOptions = {
+    Normal: {},
+    Danger: {},
+};
 
 export default class Status extends Component { //나중에 prop으로 상태들을 가져오자
     constructor(props){
         super(props);
         this.state ={
             title: null,
-            score: null
+            score: null,
+            depression_score: null,
+            heartrate: 80,
         }
     }    
 
@@ -28,45 +41,137 @@ export default class Status extends Component { //나중에 prop으로 상태들
         fetch('http://192.168.0.12:8889/chat')
         .then(res => res.json())
         .then(data =>this.setState({score: data.data}));
+
+        fetch('http://192.168.0.12:8889/depression')
+        .then(res => res.json())
+        .then(data =>this.setState({depression_score: data.depression_score}));
+
+        // let target = 'http://192.168.0.7:8889/token';
+        // let token = registerForPushNotificationsAsync();
+        // console.log(token);
+        // console.log(typeof(token));
+        // axios({
+        //   url: target,
+        //   method: 'post',
+        //   headers: {
+            // 'Content-Type': 'application/json',
+        //   },
+        //   data: {
+            // expo_token : token,
+        //   },
+            // 
+        // })
+        // .then( response => {
+        //   console.log(JSON.stringify(response))
+        // })
+        // .catch(err => console.log(err));
     }
 
     render(){
         const {score} = this.state;
-    return (
-        <View style={styles.container}>
-            <View style={styles.statusView}>
-                <Image style={styles.logo} source={require('./assets/Home_image.png')} />
-            </View>
-            <View style={styles.statusView}>
-                <Text>Your latest Mood Score is </Text>
-            </View>
-            <View style={styles.statusView}>
-                <Text>
-                    {score ? `${score}` : 'test'}
-                </Text>
-            </View> 
-            <View style={styles.statusView}>
+        const {heartrate} = this.state;
+        const {depression_score} = this.state;
+        const moodStatus = (score >= 50) ? 'Pos' : 'Neg';
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.statusView}>
+                    <View style={{flex: 1}}></View>
+                    <View style={{flex: 8, justifyContent: 'center', flexDirection: 'row' }}>
+                        <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Image style={styles.icon} source={moodOptions[moodStatus].statusIcon} />
+                        </View>
+                        <View style={{flex: 2.3, justifyContent: 'center'}}>
+                            <Text style={{fontSize:20,}}> {score} </Text>
+                            <ProgressBar progress={(score * 0.01)} width={220} height={15} color={moodOptions[moodStatus].statusColor} />
+                        </View>
+                    </View>
+                </View>
 
-            </View>
-        </View>
-    );
+                <View style={styles.statusView}>
+                    <View style={{flex: 1}}></View>
+                        <View style={{flex: 8, justifyContent: 'center', flexDirection: 'row',}}>
+                            <View style={{flex: 1, justifyContent: 'center'}}>
+                                <Image style={styles.icon} source={require('./assets/stress.png')} />
+                            </View>
+                            <View style={{flex: 2.3, paddingTop:40 ,justifyContent: 'flex-start', flexDirection: 'row',}}>
+                                <Text style={{fontSize:25}}>{depression_score}</Text>
+                            </View>
+                        </View>
+                </View>
+
+                <View style={styles.statusView}>
+                    <View style={{flex: 1}}></View>
+                    <View style={{flex: 8, justifyContent: 'center', flexDirection: 'row', }}>
+                        <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Image style={styles.icon} source={require('./assets/sneakers.png')} />
+                        </View>
+                        <View style={{flex: 2.3, justifyContent: 'center'}}>
+                            <Text>Movement Status</Text>
+                        </View>
+                    </View>
+                </View> 
+                <View style={styles.statusView}>
+                    <View style={{flex: 1}}></View>
+                    <View style={{flex: 8, justifyContent: 'center', flexDirection: 'row', }}>
+                        <View style={{flex: 1, justifyContent: 'center'}}>
+                            <Image style={styles.icon} source={require('./assets/heart.png')} />
+                        </View>
+                        <View style={{flex: 2.3, justifyContent: 'center'}}>
+                            <Text style={{fontSize: 30}}> {heartrate} bpm</Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.statusView}>
+                    <View style={{flex: 1}}></View>
+                        <View style={{flex: 8, justifyContent: 'center', flexDirection: 'row',}}>
+                            <View style={{flex: 1, justifyContent: 'center'}}>
+                                <Image style={styles.icon} source={require('./assets/thermometer.png')} />
+                            </View>
+                            <View style={{flex: 2.3, justifyContent: 'center'}}>
+                                <Text style={{fontSize: 30}}> 36.5 °C</Text>
+                            </View>
+                        </View>
+                    </View>
+            </SafeAreaView>
+        );
     }
 
-    // getMoodScore(){
-    // let target = 'http://172.30.1.52:8889/chat';
-    //     axios({
-    //       url: target,
-    //       method: 'get',
-    //       data: {
-    //         mood_score : total_Score.toFixed(2),  
-    //       },
-    //     })
-    //     .then( response => {
-    //       console.log(response)
-    //     })
-    //     .catch(err => console.log(err));
-    // }
+
+    
+
 }
+
+// async function registerForPushNotificationsAsync() {
+    // let token;
+    // if (Constants.isDevice) {
+        // const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+        // let finalStatus = existingStatus;
+        // if (existingStatus !== 'granted') {
+        //   const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        //   finalStatus = status;
+        // }
+        // if (finalStatus !== 'granted') {
+        //   alert('Failed to get push token for push notification!');
+        //   return;
+        // }
+        // token = (await Notifications.getExpoPushTokenAsync());
+        // console.log(token);
+        // console.log(typeof(token));
+    //   } else {
+        // alert('Must use physical device for Push Notifications');
+    //   }
+    // 
+    //   if (Platform.OS === 'android') {
+        // Notifications.createChannelAndroidAsync('default', {
+        //   name: 'default',
+        //   sound: true,
+        //   priority: 'max',
+        //   vibrate: [0, 250, 250, 250],
+        // });
+    //   }
+//   
+    // return token;
+//   }
 
 const styles = StyleSheet.create({
     container: {
@@ -75,9 +180,28 @@ const styles = StyleSheet.create({
     },
     statusView: {
         flex: 1,
+        backgroundColor: '#FfffFF',
+     //   justifyContent: 'center'
     },
     icon: {
-
-    }
+        width: '100%',
+        height: '60%',
+        resizeMode: 'contain',
+    },
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
