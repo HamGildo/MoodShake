@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 //import * as Notifications from 'expo-notifications';
 //import * as Permissions from 'expo-permissions';
-import { StyleSheet, Text, SafeAreaView, View, Image } from 'react-native';
+import { StyleSheet, Text, Button, SafeAreaView, View, Image } from 'react-native';
+import Iframe from "react-native-youtube-iframe";
 import ProgressBar from 'react-native-progress/Bar';
+import { TextInput } from 'react-native';
 //import axios from 'axios';
 //import { render } from 'react-dom';
 //import Constants from 'expo-constants';
@@ -34,7 +36,15 @@ export default class Status extends Component { //나중에 prop으로 상태들
             score: null,
             depression_score: null,
             heartrate: 80,
-        }
+        };
+        this.stepState = {
+            steps : [],
+            isLoaded : false,
+        };
+        this.heartState = {
+            bpm : [],
+            isLoaded2 : false,
+        };
     }    
 
     componentDidMount(){
@@ -46,32 +56,58 @@ export default class Status extends Component { //나중에 prop으로 상태들
         .then(res => res.json())
         .then(data =>this.setState({depression_score: data.depression_score}));
 
-        // let target = 'http://192.168.0.7:8889/token';
-        // let token = registerForPushNotificationsAsync();
-        // console.log(token);
-        // console.log(typeof(token));
-        // axios({
-        //   url: target,
-        //   method: 'post',
-        //   headers: {
-            // 'Content-Type': 'application/json',
-        //   },
-        //   data: {
-            // expo_token : token,
-        //   },
-            // 
-        // })
-        // .then( response => {
-        //   console.log(JSON.stringify(response))
-        // })
-        // .catch(err => console.log(err));
+        fetch('https://api.fitbit.com/1/user/-/activities/steps/date/today/today.json',{   //걸음수 요청 api
+            method:'GET',
+            headers:{
+                'Authorization':'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJURksiLCJzdWIiOiI4VkQyM1AiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjAzODA1Nzk0LCJpYXQiOjE2MDM3NzY5OTR9.5gXHL0iKrBmrNJ4orzacuN8qp4cuAbr8RRyy0BQieSw'
+                //Bearer 뒷부분 수정필요
+            }
+        }).then(res =>res.json())
+        .then(json =>{
+            this.setState({
+                isLoaded : true,
+                steps:json,
+            })
+        });
+
+        fetch('https://api.fitbit.com/1/user/-/activities/activityCalories/date/today/today.json',{  //심박수 요청 api
+            method:'GET',
+            headers:{
+                'Authorization':'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJURksiLCJzdWIiOiI4VkQyM1AiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjAzODA1Nzk0LCJpYXQiOjE2MDM3NzY5OTR9.5gXHL0iKrBmrNJ4orzacuN8qp4cuAbr8RRyy0BQieSw'
+                //Bearer 뒷부분 수정필요
+            }
+        }).then(res =>res.json())
+        .then(json =>{
+            this.setState({
+                isLoaded2 : true,
+                bpm:json,
+            })
+        });
+
+        // fetch('https://www.googleapis.com/youtube/v3/search?key=AIzaSyBcRb0seNUW7Jy2Urb6wxeeZeL0fEqmYTs',{  //유튜브 검색 api
+        //     method:'GET',
+        //     params:{
+        //         'q' : ''
+        //     }
+        // }).then(res =>res.json())
+        // .then(json =>{
+        //     this.setState({
+        //         isLoaded3 : true,
+        //         song:json,
+        //     })
+        // });
     }
 
     render(){
         const {score} = this.state;
         const {heartrate} = this.state;
         const {depression_score} = this.state;
-        const moodStatus = (score >= 50) ? 'Pos' : 'Neg';
+        const moodStatus = (score >= 50) ? 'Pos' : 'Neg';   
+        var {isLoaded,steps}=this.state;
+        var {isLoaded2,bpm}=this.state;
+        if(!(isLoaded&&isLoaded2)){
+            return <Text>Now Loading...</Text>;
+        }else{
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.statusView}>
@@ -106,7 +142,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
                             <Image style={styles.icon} source={require('./assets/sneakers.png')} />
                         </View>
                         <View style={{flex: 2.3, justifyContent: 'center'}}>
-                            <Text>Movement Status</Text>
+                            <Text>{steps["activities-steps"][0].value}걸음</Text>
                         </View>
                     </View>
                 </View> 
@@ -117,7 +153,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
                             <Image style={styles.icon} source={require('./assets/heart.png')} />
                         </View>
                         <View style={{flex: 2.3, justifyContent: 'center'}}>
-                            <Text style={{fontSize: 30}}> {heartrate} bpm</Text>
+                            { <Text style={{fontSize: 30}}> {bpm["activities-activityCalories"][0].value} bpm</Text>}
                         </View>
                     </View>
                 </View>
@@ -130,10 +166,27 @@ export default class Status extends Component { //나중에 prop으로 상태들
                             <View style={{flex: 2.3, justifyContent: 'center'}}>
                                 <Text style={{fontSize: 30}}> 36.5 °C</Text>
                             </View>
-                        </View>
                     </View>
+                </View>
+                <View >
+                    <View>
+                        <TextInput
+                            style={styles.searchBar}
+                            underlineColorAndroid="transparent"
+                            placeholder="노래 제목"
+                            placeholderTextColor="#9DB789"
+                        />
+                        <Button title="검색" onClick={()=>alert("requset Song")} style={styles.searchButton} color="#9DB589" />
+                    </View>
+                    <Iframe
+                        height={200}
+                        play={true}
+                        videoId={"dzesepwhtqo"}
+                        //onChangeState={onStateChange}
+                    />
+                </View>    
             </SafeAreaView>
-        );
+        );}
     }
 
 
@@ -188,6 +241,17 @@ const styles = StyleSheet.create({
         height: '60%',
         resizeMode: 'contain',
     },
+    searchBar: {
+        margin: 15,
+        padding:10,
+        height: 40,
+        width: 270,
+        borderColor: "#9DB589",
+        borderWidth: 1
+    },
+    searchButton: {
+        width:100
+    }
 
 });
 

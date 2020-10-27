@@ -29,6 +29,7 @@ export default function Home({ navigation }) {
                         buttonColor={'#5F805D'}
                         title={'Start Chat'}
                         onPress={() => navigation.navigate('Chatbot')}/> 
+        
                     
                 </View>
     
