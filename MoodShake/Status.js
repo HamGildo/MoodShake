@@ -10,7 +10,7 @@ import { TextInput } from 'react-native';
 //import Constants from 'expo-constants';
 //import {Notifications} from 'expo';
 
-
+const fitbit_token = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJUNzciLCJzdWIiOiI4VFJCREsiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd3BybyB3bnV0IHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjAzODY1Nzg3LCJpYXQiOjE2MDM4MzY5ODd9.xFZGhftYAdZmLHxVD40xfdE_p-tPuN3495zaIMOpOr4'
 
 const moodOptions = {
     Pos: {
@@ -35,7 +35,6 @@ export default class Status extends Component { //나중에 prop으로 상태들
             title: null,
             score: null,
             depression_score: null,
-            heartrate: 80,
         };
         this.stepState = {
             steps : [],
@@ -56,10 +55,11 @@ export default class Status extends Component { //나중에 prop으로 상태들
         .then(res => res.json())
         .then(data =>this.setState({depression_score: data.depression_score}));
 
+
         fetch('https://api.fitbit.com/1/user/-/activities/steps/date/today/today.json',{   //걸음수 요청 api
             method:'GET',
             headers:{
-                'Authorization':'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJURksiLCJzdWIiOiI4VkQyM1AiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjAzODA1Nzk0LCJpYXQiOjE2MDM3NzY5OTR9.5gXHL0iKrBmrNJ4orzacuN8qp4cuAbr8RRyy0BQieSw'
+                'Authorization': fitbit_token
                 //Bearer 뒷부분 수정필요
             }
         }).then(res =>res.json())
@@ -70,10 +70,23 @@ export default class Status extends Component { //나중에 prop으로 상태들
             })
         });
 
-        fetch('https://api.fitbit.com/1/user/-/activities/activityCalories/date/today/today.json',{  //심박수 요청 api
+        // fetch('https://api.fitbit.com/1/user/-/activities/activityCalories/date/today/today.json',{  //심박수 요청 api
+            // method:'GET',
+            // headers:{
+                // 'Authorization': fitbit_token
+            // }
+        // }).then(res =>res.json())
+        // .then(json =>{
+            // this.setState({
+                // isLoaded2 : true,
+                // bpm:json,
+            // })
+        // });
+
+        fetch('https://api.fitbit.com/1/user/-/activities/heart/date/today/today/1min.json',{  //심박수 요청 api
             method:'GET',
             headers:{
-                'Authorization':'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJURksiLCJzdWIiOiI4VkQyM1AiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjAzODA1Nzk0LCJpYXQiOjE2MDM3NzY5OTR9.5gXHL0iKrBmrNJ4orzacuN8qp4cuAbr8RRyy0BQieSw'
+                'Authorization': fitbit_token
                 //Bearer 뒷부분 수정필요
             }
         }).then(res =>res.json())
@@ -83,6 +96,10 @@ export default class Status extends Component { //나중에 prop으로 상태들
                 bpm:json,
             })
         });
+
+
+
+
 
         // fetch('https://www.googleapis.com/youtube/v3/search?key=AIzaSyBcRb0seNUW7Jy2Urb6wxeeZeL0fEqmYTs',{  //유튜브 검색 api
         //     method:'GET',
@@ -100,7 +117,6 @@ export default class Status extends Component { //나중에 prop으로 상태들
 
     render(){
         const {score} = this.state;
-        const {heartrate} = this.state;
         const {depression_score} = this.state;
         const moodStatus = (score >= 50) ? 'Pos' : 'Neg';   
         var {isLoaded,steps}=this.state;
@@ -153,7 +169,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
                             <Image style={styles.icon} source={require('./assets/heart.png')} />
                         </View>
                         <View style={{flex: 2.3, justifyContent: 'center'}}>
-                            { <Text style={{fontSize: 30}}> {bpm["activities-activityCalories"][0].value} bpm</Text>}
+                            { <Text style={{fontSize: 30}}> {bpm["activities-heart-intraday"]["dataset"]["dataset".length - 1].value} bpm</Text>}
                         </View>
                     </View>
                 </View>
@@ -164,7 +180,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
                                 <Image style={styles.icon} source={require('./assets/thermometer.png')} />
                             </View>
                             <View style={{flex: 2.3, justifyContent: 'center'}}>
-                                <Text style={{fontSize: 30}}> 36.5 °C</Text>
+                                <Text style={{fontSize: 30}}> 36</Text>
                             </View>
                     </View>
                 </View>
