@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 //import * as Notifications from 'expo-notifications';
 //import * as Permissions from 'expo-permissions';
-import { StyleSheet, Text, Button, SafeAreaView, View, Image } from 'react-native';
+import { StyleSheet, Text, Button, SafeAreaView, View, Image,Alert } from 'react-native';
 import Iframe from "react-native-youtube-iframe";
 import ProgressBar from 'react-native-progress/Bar';
 import { TextInput } from 'react-native';
-//import axios from 'axios';
+import axios from 'axios';
 //import { render } from 'react-dom';
 //import Constants from 'expo-constants';
 //import {Notifications} from 'expo';
 
-const fitbit_token = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJUNzciLCJzdWIiOiI4VFJCREsiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd3BybyB3bnV0IHdzbGUgd3dlaSB3c29jIHdhY3Qgd3NldCB3bG9jIiwiZXhwIjoxNjAzODY1Nzg3LCJpYXQiOjE2MDM4MzY5ODd9.xFZGhftYAdZmLHxVD40xfdE_p-tPuN3495zaIMOpOr4'
+const fitbit_token = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyMkJURksiLCJzdWIiOiI4VkQyM1AiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdzZXQgd2FjdCB3bG9jIiwiZXhwIjoxNjAzOTgyMzQ0LCJpYXQiOjE2MDM5NTM1NDR9.gl_zUPHJItqDvwp59KW9-X9UkkYU_-yl3wPTs0I5pI8'
 
 const moodOptions = {
     Pos: {
@@ -27,6 +27,11 @@ const bpmOptions = {
     Normal: {},
     Danger: {},
 };
+const temp="";
+
+function Users(){
+    
+    }
 
 export default class Status extends Component { //나중에 prop으로 상태들을 가져오자
     constructor(props){
@@ -35,6 +40,8 @@ export default class Status extends Component { //나중에 prop으로 상태들
             title: null,
             score: null,
             depression_score: null,
+            songTitle: "",
+            songId:"dzesepwhtqo",
         };
         this.stepState = {
             steps : [],
@@ -44,7 +51,37 @@ export default class Status extends Component { //나중에 prop으로 상태들
             bpm : [],
             isLoaded2 : false,
         };
+        this.youtubeState = {
+            youtube : [],
+            isLoaded3 : false,
+        };
     }    
+
+    checkNull = () => {
+        if(this.state.songTitle == ""){
+            Alert.alert("검색어를 입력해주세요.");
+        }else{
+            this.getVideoId();
+        }
+    };
+
+    changeText = (e) => {
+        this.setState({songTitle:e});
+    };
+
+    getVideoId = async () => {
+        axios.get('https://www.googleapis.com/youtube/v3/search?key=AIzaSyBcRb0seNUW7Jy2Urb6wxeeZeL0fEqmYTs', { //https://api.androidhive.info/contacts/
+            params: {
+                q: this.state.songTitle,
+                type: 'video',
+            }
+        }).then(response => {
+            this.setState({
+                youtube: response.data,
+                songId: response.data["items"][0].id.videoId
+            });
+        });
+    };
 
     componentDidMount(){
         fetch('http://192.168.0.12:8889/chat')
@@ -70,19 +107,6 @@ export default class Status extends Component { //나중에 prop으로 상태들
             })
         });
 
-        // fetch('https://api.fitbit.com/1/user/-/activities/activityCalories/date/today/today.json',{  //심박수 요청 api
-            // method:'GET',
-            // headers:{
-                // 'Authorization': fitbit_token
-            // }
-        // }).then(res =>res.json())
-        // .then(json =>{
-            // this.setState({
-                // isLoaded2 : true,
-                // bpm:json,
-            // })
-        // });
-
         fetch('https://api.fitbit.com/1/user/-/activities/heart/date/today/today/1min.json',{  //심박수 요청 api
             method:'GET',
             headers:{
@@ -96,23 +120,6 @@ export default class Status extends Component { //나중에 prop으로 상태들
                 bpm:json,
             })
         });
-
-
-
-
-
-        // fetch('https://www.googleapis.com/youtube/v3/search?key=AIzaSyBcRb0seNUW7Jy2Urb6wxeeZeL0fEqmYTs',{  //유튜브 검색 api
-        //     method:'GET',
-        //     params:{
-        //         'q' : ''
-        //     }
-        // }).then(res =>res.json())
-        // .then(json =>{
-        //     this.setState({
-        //         isLoaded3 : true,
-        //         song:json,
-        //     })
-        // });
     }
 
     render(){
@@ -121,6 +128,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
         const moodStatus = (score >= 50) ? 'Pos' : 'Neg';   
         var {isLoaded,steps}=this.state;
         var {isLoaded2,bpm}=this.state;
+        var {isLoaded3, youtube} = this.state;
         if(!(isLoaded&&isLoaded2)){
             return <Text>Now Loading...</Text>;
         }else{
@@ -158,7 +166,7 @@ export default class Status extends Component { //나중에 prop으로 상태들
                             <Image style={styles.icon} source={require('./assets/sneakers.png')} />
                         </View>
                         <View style={{flex: 2.3, justifyContent: 'center'}}>
-                            <Text>{steps["activities-steps"][0].value}걸음</Text>
+                            <Text style={{fontSize: 30}}>{steps["activities-steps"][0].value}걸음</Text>
                         </View>
                     </View>
                 </View> 
@@ -189,15 +197,17 @@ export default class Status extends Component { //나중에 prop으로 상태들
                         <TextInput
                             style={styles.searchBar}
                             underlineColorAndroid="transparent"
+                            value={this.state.songTitle}
                             placeholder="노래 제목"
                             placeholderTextColor="#9DB789"
+                            onChangeText={this.changeText}
                         />
-                        <Button title="검색" onClick={()=>alert("requset Song")} style={styles.searchButton} color="#9DB589" />
+                        <Button title="검색" onPress={() => this.checkNull()} color="#9DB589" />
                     </View>
                     <Iframe
                         height={200}
-                        play={true}
-                        videoId={"dzesepwhtqo"}
+                        play={false}
+                        videoId={this.state.songId}
                         //onChangeState={onStateChange}
                     />
                 </View>    
